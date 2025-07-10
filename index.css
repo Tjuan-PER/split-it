@@ -1,0 +1,174 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Rubik', sans-serif;
+    background-color: #222328;
+    color: cadetblue;
+    user-select: none;
+}
+
+.header {
+    background-color: #00bf62;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    max-width: 320px; /* Common mobile device width */
+    margin: 0 auto;
+    text-align: center;
+    gap: 15px;
+    padding: 10px;
+}
+
+img {
+    width: 150px;
+    margin: 0 auto;
+}
+
+.num-container, 
+.num-btns-container, 
+.order-amount-btns  {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.num-container{
+    flex-wrap: wrap;
+}
+
+.num-btns-container,
+.order-amount-btns,
+li 
+{
+    column-gap: 5px;
+    border-radius: 10px;
+}
+
+button {
+    height: 48px;
+    border-radius: 10px;
+}
+
+.num-btns-container > button,
+.order-amount-btns > button {
+    width: 40px;
+}
+
+.add-btn, .subtract-btn{
+    border: 0;
+    background-color: cadetblue;
+}
+
+input {
+    background-color: #222328;
+    color:cadetblue;
+    width: 75px;
+    outline: none;
+    padding: 10px 12.5px;
+    box-sizing: border-box;
+    border: 0;
+}
+
+input:focus {
+    background-color: whitesmoke;
+    color: #222328;
+    border: 0;
+}
+
+.option-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 10px
+}
+
+.option-container > button {
+    width: 150px;
+    background-color: #00bf62;
+    color:beige;
+    padding: 10px 20px;
+    border: 0;
+    text-align: center;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:active{
+    transform: translateY(2px);
+}
+
+.bold {
+    font-weight: bold;
+}
+
+ul{
+    list-style: none;
+    margin: 5px 0px;
+    padding: 0;
+    /* gap: 5px */
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    height: 48px;
+    border-radius: 0;
+    border-bottom: 1px solid cadetblue;
+}
+
+li > div {
+    align-content: center;
+}
+
+li > div:first-child {
+    text-align: left;
+    width: 100px;
+}
+
+.amount, .order-amount{
+    width: 40px;
+}
+
+.new-order {
+    display: flex;
+    justify-content: space-between;
+}
+
+.new-order > input {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.add-order-btn {
+    margin-top: 8px;
+    width: 100%;
+    background-color: #222328;
+    border: 1px dashed cadetblue;
+    color: cadetblue
+}
+
+.border{
+    background-color: cadetblue;
+    margin: 0 5px;
+    height: 1px;
+}
+
+.calculate-btn {
+    background-color: #f96607;
+    color: white;
+    outline: none;
+    border: 0;
+}
+
+.person-name {
+    border-radius: 10px;
+    margin-top: 5px;
+    width: 100%;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
