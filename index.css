@@ -18,7 +18,7 @@ html, body {
     max-width: 320px; /* Common mobile device width */
     margin: 0 auto;
     text-align: center;
-    gap: 15px;
+    gap: 10px;
     padding: 10px;
 }
 
@@ -126,6 +126,12 @@ li > div:first-child {
     width: 100px;
 }
 
+li > div:last-child {
+    width: 20px;
+    text-align: center;
+    margin-right: 10px;
+}
+
 .amount, .order-amount{
     width: 40px;
 }
@@ -154,6 +160,10 @@ li > div:first-child {
     height: 1px;
 }
 
+.hidden {
+    display: none;
+}
+
 .calculate-btn {
     background-color: #f96607;
     color: white;
@@ -161,14 +171,19 @@ li > div:first-child {
     border: 0;
 }
 
+#add-new-person-btn {
+    width: 100%;
+    background-color: cadetblue;
+    color: white;
+    outline: none;
+    border: 0;
+}
+
 .person-name {
+    font-size: medium;
     border-radius: 10px;
     margin-top: 5px;
     width: 100%;
     font-weight: bold;
-}
-
-.hidden {
-    display: none;
 }
 

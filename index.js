@@ -1,5 +1,5 @@
 import { initializeApp }  from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"
-import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
+import { getDatabase, ref, push, onValue, remove, set , get} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
 
 const appSettings = {
     databaseURL: "https://split-it-22c58-default-rtdb.firebaseio.com/"
@@ -7,13 +7,13 @@ const appSettings = {
 
 const app = initializeApp(appSettings)
 const database = getDatabase(app)
-const equallyInDB = ref(database, "order-session")
 // const perPersonInDb = ref(database, "per-person")
 
 // console.log(equallyInDB, perPersonInDb)
 
 const perPersonBtn = document.getElementById("per-person-btn")
 const equallyBtn = document.getElementById("equally-btn")
+const addNewPersonBtn = document.getElementById('add-new-person-btn')
 const calculateBtn = document.getElementById("calculate-btn")
 
 const orderContainer = document.getElementById("order-container")
@@ -21,20 +21,58 @@ const orderSessionEl = document.getElementById("order-session")
 
 const receiptEl = document.getElementById("receipt-el")
 let splitEqually = true
+let count = 0
 
 function clearInput(element){
     element.value = ""
 }
 
+
+function renderOrderSession(splitEqually=true){
+    const equallyInDB = ref(database, "order-session")
+    onValue(equallyInDB, function(snapshot){
+        clearSession(orderSessionEl)
+        if (snapshot.exists()){
+            let orderSession = Object.entries(snapshot.val())
+            count = 0
+            let max = (splitEqually) ? 1 : orderSession.length
+            for (let i = 0; i < max; i++){
+                let name = orderSession[i][1]['name']
+                let orders = orderSession[i][1]['orders']
+                let index = i
+                let personNum = index + 1
+                let personEl = renderPerson(index, personNum, name, orders)
+                orderSessionEl.append(personEl)
+                count += 1
+            }
+        } else {
+            console.log("No Orders yet...") 
+            let newPersonEl = newCustomer(0, 1)
+            orderSessionEl.append(newPersonEl)
+        }
+    })
+}
+
 equallyBtn.addEventListener("click", function(){
     orderContainer.classList.remove('hidden')
+    calculateBtn.classList.remove('hidden')
+    addNewPersonBtn.classList.add('hidden')
     splitEqually = true
+    renderOrderSession(splitEqually)
 })
 
 perPersonBtn.addEventListener("click", function(){
     orderContainer.classList.remove('hidden')
+    calculateBtn.classList.remove('hidden')
+    addNewPersonBtn.classList.remove('hidden')
     splitEqually = false
     console.log("Split individually activated") 
+    renderOrderSession(splitEqually)
+})
+
+addNewPersonBtn.addEventListener("click", function(){
+        let newPersonEl = newCustomer(count, count + 1)
+        orderSessionEl.append(newPersonEl)
 })
 
 calculateBtn.addEventListener("click", function(){
@@ -159,13 +197,14 @@ function createAddItemButton(personNameInputField, itemNameInputFieldEl,
         }
         
         let exactLocationOfPersonInDB = ref(database, `order-session/${index}/orders`)
-        let inputValue = {'item':itemNameInputFieldEl.value, 
+        let inputValue = {'item':itemNameInputFieldEl.value.toLowerCase(), 
             'price':Number(itemPriceInputFieldEl.value), 
             'amount':Number(orderAmountEl.textContent)}
         if (!(inputValue['item'] == "") 
             && inputValue['price'] > 0
             && inputValue['amount'] > 0){
             push(exactLocationOfPersonInDB, inputValue)
+            console.log("Order added to database")  
             clearInput(itemNameInputFieldEl)
             clearInput(itemPriceInputFieldEl)
             orderAmountEl.innerText = '0'
@@ -201,7 +240,7 @@ function createNewPersonDiv(num){
     return newPerson
 }
 
-function renderDB(index, num, name = "", orders){
+function renderPerson(index, num, name = "", orders){
     // Create a div element for person
     let person = createNewPersonDiv(num)
 
@@ -262,38 +301,3 @@ function newCustomer(index, num){
     
 }
 
-// onValue(equallyInDB, function(snapshot){
-//     clearSession(orderSessionEl)
-//     if (snapshot.exists()){
-//         let person = Object.entries(snapshot.val())
-//         let name = person[0][1]['name']
-//         let orders = person[0][1]['orders']
-//         let index = 0
-//         let personNum = index + 1
-//         let personEl = renderDB(index, personNum, name, orders)
-//         orderSessionEl.append(personEl)
-//     } else {
-//         console.log("No Orders yet...") 
-//         let newPersonEl = newCustomer(0, 1)
-//         orderSessionEl.append(newPersonEl)
-//     }
-// })
-
-onValue(equallyInDB, function(snapshot){
-    clearSession(orderSessionEl)
-    if (snapshot.exists()){
-        let person = Object.entries(snapshot.val())
-        for (let i = 0; i < person.length; i++){
-            let name = person[i][1]['name']
-            let orders = person[i][1]['orders']
-            let index = i
-            let personNum = index + 1
-            let personEl = renderDB(index, personNum, name, orders)
-            orderSessionEl.append(personEl)
-        }
-    } else {
-        console.log("No Orders yet...") 
-        let newPersonEl = newCustomer(0, 1)
-        orderSessionEl.append(newPersonEl)
-    }
-})
