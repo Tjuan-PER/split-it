@@ -127,9 +127,18 @@ li > div:first-child {
 }
 
 li > div:last-child {
-    width: 20px;
+    min-width: 20px;
     text-align: center;
-    margin-right: 10px;
+    padding: 0 10px;
+}
+
+.receipt li{
+    border: 0;
+    height: 20px;
+}
+
+.receipt p {
+    text-align: left;
 }
 
 .amount, .order-amount{

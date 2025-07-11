@@ -15,6 +15,9 @@ const perPersonBtn = document.getElementById("per-person-btn")
 const equallyBtn = document.getElementById("equally-btn")
 const addNewPersonBtn = document.getElementById('add-new-person-btn')
 const calculateBtn = document.getElementById("calculate-btn")
+const newSessionBtn = document.getElementById('new-session-btn')
+const splitInputField = document.getElementById('split-input-field')
+const splitInputEl = document.getElementById('split-input-field-container')
 const orderSessionInDB = ref(database, "order-session")
 
 const orderContainer = document.getElementById("order-container")
@@ -59,6 +62,7 @@ function renderOrderSession(splitEqually=true){
 
 equallyBtn.addEventListener("click", function(){
     orderContainer.classList.remove('hidden')
+    splitInputEl.classList.remove('hidden')
     calculateBtn.classList.remove('hidden')
     addNewPersonBtn.classList.add('hidden')
     receiptEl.classList.add('hidden')
@@ -71,6 +75,7 @@ perPersonBtn.addEventListener("click", function(){
     orderContainer.classList.remove('hidden')
     calculateBtn.classList.remove('hidden')
     addNewPersonBtn.classList.remove('hidden')
+    splitInputEl.classList.add('hidden')
     receiptEl.classList.add('hidden')
     receiptEl.innerHTML += ''
     splitEqually = false
@@ -84,7 +89,6 @@ addNewPersonBtn.addEventListener("click", function(){
 })
 
 calculateBtn.addEventListener("click", function(){
-    receiptEl.classList.remove('hidden')
     console.log("Button clicked")
     receiptEl.innerHTML = ''
     receiptEl.innerHTML += `
@@ -95,9 +99,14 @@ calculateBtn.addEventListener("click", function(){
         if (snapshot.exists()){
             let orderSession = Object.entries(snapshot.val())
             if (splitEqually) {
-                let subtotal = calculateSubtotal(orderSession[0][1]['orders'])
-                let taxAndTotal = calculateTaxAndTotal(subtotal)
-                renderReceipt(subtotal, taxAndTotal[0], taxAndTotal[1], taxAndTotal[2])
+                if (splitInputField.value){
+                    let subtotal = calculateSubtotal(orderSession[0][1]['orders'])
+                    let taxAndTotal = calculateTaxAndTotal(subtotal)
+                    let split = splitInputField.value
+                    renderReceipt(subtotal, taxAndTotal[0], taxAndTotal[1], taxAndTotal[2], undefined, split)
+                    receiptEl.classList.remove('hidden')
+                    newSessionBtn.classList.remove('hidden')
+                }
                 
             } else {
                 let groupSubtotal = 0
@@ -110,28 +119,38 @@ calculateBtn.addEventListener("click", function(){
                 } 
                 let taxAndTotal = calculateTaxAndTotal(groupSubtotal)
                 renderReceipt(groupSubtotal, taxAndTotal[0], taxAndTotal[1], taxAndTotal[2])               
+                receiptEl.classList.remove('hidden')
+                newSessionBtn.classList.remove('hidden')
             }
         }
     })
-    // clearSessionInDB()
+})
+
+newSessionBtn.addEventListener("click", function(){
+    clearSessionInDB()
+    newSessionBtn.classList.add('hidden')
 })
 
 function calculateTaxAndTotal(subtotal){
     let provincialSalesTax = subtotal * PST
+    provincialSalesTax = provincialSalesTax
     let goodServiceTax = subtotal * GST
+    goodServiceTax = goodServiceTax
     let total = subtotal + provincialSalesTax + goodServiceTax
-    return [provincialSalesTax.toFixed(2), goodServiceTax.toFixed(2), total.toFixed(2)]
+    return [provincialSalesTax, goodServiceTax, total]
 }
 
-function renderReceipt(subtotal, provincialSalesTax, goodServiceTax, total, name = "Group Split"){
+function renderReceipt(subtotal, provincialSalesTax, goodServiceTax, total, name = "Group Total", split = 0){
+    let splitEl = (split) ? `<li><div>Each Person</div><div>$${(total / split).toFixed(2)}</div></li>` : ""
     receiptEl.innerHTML += `
-        <div>
+        <div class="receipt">
             <p class="bold">${name}</p>
             <ul>
-                <li><div>Subtotal</div><div>${subtotal}</div></li>
-                <li><div>PST</div><div>${provincialSalesTax}</div></li>
-                <li><div>GST</div><div>${goodServiceTax}</div></li>
-                <li><div>Total</div><div>${total}</div></li>
+                <li><div>Subtotal</div><div>$${subtotal.toFixed(2)}</div></li>
+                <li><div>PST</div><div>$${provincialSalesTax.toFixed(2)}</div></li>
+                <li><div>GST</div><div>$${goodServiceTax.toFixed(2)}</div></li>
+                <li><div>Total</div><div>$${total.toFixed(2)}</div></li>
+                ${splitEl}
             </ul>
         </div>
         `
@@ -140,7 +159,7 @@ function renderReceipt(subtotal, provincialSalesTax, goodServiceTax, total, name
 function calculateSubtotal(orders){
     let subtotal = 0
     for (const item in orders){
-        subtotal += orders[item]['price'].toFixed(2) * orders[item]['amount'].toFixed(2)
+        subtotal += orders[item]['price'] * orders[item]['amount']
     }
     return subtotal
 }
@@ -183,7 +202,7 @@ function loadOrders(index, orderListEl, orders){
         let itemEl = document.createElement("li")
         itemEl.innerHTML = `
             <div id="${itemID}-item">${itemName}</div>
-            <div id="${itemID}-price">${itemPrice}</div>
+            <div id="${itemID}-price">$${itemPrice}</div>
             <div id="${itemID}-amount">${itemAmount}</div>
         `
 
@@ -268,7 +287,7 @@ function createAddItemButton(personNameInputField, itemNameInputFieldEl,
         
         let exactLocationOfPersonInDB = ref(database, `order-session/${index}/orders`)
         let inputValue = {'item':itemNameInputFieldEl.value.toLowerCase(), 
-            'price':Number(itemPriceInputFieldEl.value), 
+            'price':Number(itemPriceInputFieldEl.value).toFixed(2), 
             'amount':Number(orderAmountEl.textContent)}
         if (!(inputValue['item'] == "") 
             && inputValue['price'] > 0

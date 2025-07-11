@@ -28,6 +28,10 @@
             <button id="equally-btn">Equally</button>
             <button id="per-person-btn">Per Person</button>
         </div>
+        <div class="hidden" id="split-input-field-container">
+            <label for="split-input-field">Number of splits</label>
+            <input type="text" name="split-input-field" id="split-input-field">
+        </div>
         <div class="order-container hidden" id="order-container">     
             <h1>Orders</h1>
             <div class="border"></div>
@@ -35,8 +39,9 @@
         </div>
         <button class="hidden" id="add-new-person-btn" aria-label="Add new person">(+) Add Person</button>
         <button class="calculate-btn hidden" id="calculate-btn">Calculate</button>
-        <div class="receipt hidden" id="receipt-el">
+        <div class="receipt-container hidden" id="receipt-el">
         </div>
+        <button class="new-session-btn hidden" id="new-session-btn">New Session</button>
     </div>
     <script src="index.js" type="module"></script>
 </body>
