@@ -9,15 +9,15 @@ const app = initializeApp(appSettings)
 const database = getDatabase(app)
 // const perPersonInDb = ref(database, "per-person")
 
-// console.log(equallyInDB, perPersonInDb)
+// console.log(evenlyInDB, perPersonInDb)
 
 const perPersonBtn = document.getElementById("per-person-btn")
-const equallyBtn = document.getElementById("equally-btn")
+const evenlyBtn = document.getElementById("evenly-btn")
 const addNewPersonBtn = document.getElementById('add-new-person-btn')
 const calculateBtn = document.getElementById("calculate-btn")
 const newSessionBtn = document.getElementById('new-session-btn')
 const splitInputField = document.getElementById('split-input-field')
-const splitInputEl = document.getElementById('split-input-field-container')
+const splitInputContainer = document.getElementById('split-input-field-container')
 const orderSessionInDB = ref(database, "order-session")
 
 const orderContainer = document.getElementById("order-container")
@@ -25,7 +25,7 @@ const orderSessionEl = document.getElementById("order-session")
 
 const receiptEl = document.getElementById("receipt-el")
 
-let splitEqually = true
+let splitEvenly = true
 let count = 0
 
 const GST = 0.05
@@ -36,13 +36,13 @@ function clearInput(element){
 }
 
 
-function renderOrderSession(splitEqually=true){
+function renderOrderSession(splitEvenly=true){
     onValue(orderSessionInDB, function(snapshot){
         clearSession(orderSessionEl)
         if (snapshot.exists()){
             let orderSession = Object.entries(snapshot.val())
             count = 0
-            let max = (splitEqually) ? 1 : orderSession.length
+            let max = (splitEvenly) ? 1 : orderSession.length
             for (let i = 0; i < max; i++){
                 let name = orderSession[i][1]['name']
                 let orders = orderSession[i][1]['orders']
@@ -60,27 +60,27 @@ function renderOrderSession(splitEqually=true){
     })
 }
 
-equallyBtn.addEventListener("click", function(){
+evenlyBtn.addEventListener("click", function(){
     orderContainer.classList.remove('hidden')
-    splitInputEl.classList.remove('hidden')
+    splitInputContainer.classList.remove('hidden')
     calculateBtn.classList.remove('hidden')
     addNewPersonBtn.classList.add('hidden')
     receiptEl.classList.add('hidden')
     receiptEl.innerHTML += ''
-    splitEqually = true
-    renderOrderSession(splitEqually)
+    splitEvenly = true
+    renderOrderSession(splitEvenly)
 })
 
 perPersonBtn.addEventListener("click", function(){
     orderContainer.classList.remove('hidden')
     calculateBtn.classList.remove('hidden')
     addNewPersonBtn.classList.remove('hidden')
-    splitInputEl.classList.add('hidden')
+    splitInputContainer.classList.add('hidden')
     receiptEl.classList.add('hidden')
     receiptEl.innerHTML += ''
-    splitEqually = false
+    splitEvenly = false
     // console.log("Split individually activated") 
-    renderOrderSession(splitEqually)
+    renderOrderSession(splitEvenly)
 })
 
 addNewPersonBtn.addEventListener("click", function(){
@@ -98,11 +98,11 @@ calculateBtn.addEventListener("click", function(){
     get(orderSessionInDB).then((snapshot) => {
         if (snapshot.exists()){
             let orderSession = Object.entries(snapshot.val())
-            if (splitEqually) {
-                if (splitInputField.value){
+            if (splitEvenly) {
+                if (splitInputField.textContent){
                     let subtotal = calculateSubtotal(orderSession[0][1]['orders'])
                     let taxAndTotal = calculateTaxAndTotal(subtotal)
-                    let split = splitInputField.value
+                    let split = Number(splitInputField.textContent)
                     renderReceipt(subtotal, taxAndTotal[0], taxAndTotal[1], taxAndTotal[2], undefined, split)
                     receiptEl.classList.remove('hidden')
                     newSessionBtn.classList.remove('hidden')
@@ -127,8 +127,49 @@ calculateBtn.addEventListener("click", function(){
 })
 
 newSessionBtn.addEventListener("click", function(){
+    receiptEl.classList.add('hidden')
+    splitInputField.innerHTML = '<p>2</p>'
     clearSessionInDB()
     newSessionBtn.classList.add('hidden')
+    
+})
+
+orderContainer.addEventListener("click", function(e){
+    if (e.target.className == "add-btn"){
+        const orderLine = e.target.parentNode.firstElementChild
+        let amount = Number(orderLine.textContent)
+        amount += 1
+        orderLine.innerHTML = `<p>${amount}</p>`
+        // console.log(amount)
+    }
+    if (e.target.className == "subtract-btn"){
+        const orderLine = e.target.parentNode.firstElementChild
+        let amount = Number(orderLine.textContent)
+        if (amount > 0){
+            amount -= 1
+            orderLine.innerHTML = `<p>${amount}</p>`
+            // console.log(amount)
+        }
+    }
+})
+
+splitInputContainer.addEventListener("click", function(e){
+    if (e.target.className == "add-btn"){
+        const orderLine = e.target.parentNode.firstElementChild
+        let amount = Number(orderLine.textContent)
+        amount += 1
+        orderLine.innerHTML = `<p>${amount}</p>`
+        // console.log(amount)
+    }
+    if (e.target.className == "subtract-btn"){
+        const orderLine = e.target.parentNode.firstElementChild
+        let amount = Number(orderLine.textContent)
+        if (amount > 2){
+            amount -= 1
+            orderLine.innerHTML = `<p>${amount}</p>`
+            // console.log(amount)
+        }
+    }
 })
 
 function calculateTaxAndTotal(subtotal){
@@ -163,25 +204,6 @@ function calculateSubtotal(orders){
     }
     return subtotal
 }
-
-orderContainer.addEventListener("click", function(e){
-    if (e.target.className == "add-btn"){
-        const orderLine = e.target.parentNode.firstElementChild
-        let amount = Number(orderLine.textContent)
-        amount += 1
-        orderLine.innerHTML = `<p>${amount}</p>`
-        // console.log(amount)
-    }
-    if (e.target.className == "subtract-btn"){
-        const orderLine = e.target.parentNode.firstElementChild
-        let amount = Number(orderLine.textContent)
-        if (amount > 0){
-            amount -= 1
-            orderLine.innerHTML = `<p>${amount}</p>`
-            // console.log(amount)
-        }
-    }
-})
 
 function clearSession(sessionEl) {
     sessionEl.innerHTML = ''

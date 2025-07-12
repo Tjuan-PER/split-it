@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
     <title>Split It</title>
 </head>
@@ -25,12 +24,18 @@
         
         <h1 class="bold">Split It</h1>
         <div class="option-container">            
-            <button id="equally-btn">Equally</button>
+            <button id="evenly-btn">Evenly</button>
             <button id="per-person-btn">Per Person</button>
         </div>
-        <div class="hidden" id="split-input-field-container">
-            <label for="split-input-field">Number of splits</label>
-            <input type="text" name="split-input-field" id="split-input-field">
+        <div class="split-input-field-container hidden" id="split-input-field-container">
+            <p>Number of splits</p>
+            <div class="split-amount-btns">
+                <div id="split-input-field" class="split-amount">
+                    <p>2</p>
+                </div>
+                <button class="subtract-btn" id="subtract-amount-btn-split-0">-</button>
+                <button class="add-btn" id="add-amount-btn-split-0">+</button>
+            </div>
         </div>
         <div class="order-container hidden" id="order-container">     
             <h1>Orders</h1>

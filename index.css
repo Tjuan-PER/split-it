@@ -1,7 +1,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    font-family: 'Rubik', sans-serif;
+    font-family: "Open Sans", sans-serif;
     background-color: #222328;
     color: cadetblue;
     user-select: none;
@@ -29,9 +29,20 @@ img {
 
 .num-container, 
 .num-btns-container, 
-.order-amount-btns  {
+.order-amount-btns {
     display: flex;
     justify-content: space-evenly;
+}
+
+.split-input-field-container,
+.split-amount-btns {
+    display: flex;
+    justify-content: center;
+    column-gap: 5px;
+}
+
+.split-amount-btns > button {
+    width: 40px;
 }
 
 .num-container{
@@ -49,6 +60,11 @@ li
 button {
     height: 48px;
     border-radius: 10px;
+}
+
+.new-session-btn{
+    background-color: #00bf62;
+    color: aliceblue;
 }
 
 .num-btns-container > button,
@@ -141,7 +157,9 @@ li > div:last-child {
     text-align: left;
 }
 
-.amount, .order-amount{
+.amount, 
+.order-amount, 
+.split-amount{
     width: 40px;
 }
 
@@ -196,3 +214,6 @@ li > div:last-child {
     font-weight: bold;
 }
 
+#split-input-field {
+
+}
